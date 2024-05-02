@@ -25,3 +25,21 @@ Some LLM inference demos using accelerate.
 * llama.py
 
   accelerate's demo using pippy to achieve pipeline parallelization.
+
+
+
+
+
+探讨的问题：
+
+* 是否使用kv cache。
+
+  是。在``anaconda3/envs/llama2/lib/python3.10/site-packages/transformers/models/llama/modeling_llama.py``中的LlamaModel类中的forward函数，参数中的use_cache是True，有使用kv cache。
+
+* 目前的写法不支持orca般的优化。
+
+
+
+
+
+[GenerationMixin信息](https://huggingface.co/docs/transformers/v4.39.3/en/main_classes/text_generation#transformers.GenerationMixin)
