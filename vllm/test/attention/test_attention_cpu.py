@@ -34,12 +34,13 @@ KV_CACHE_DTYPE = ["auto"]
 SEEDS = [0]
 CUDA_DEVICES = ["cpu"]
 
+
 def ref_masked_attention(
-    query: torch.Tensor,
-    key: torch.Tensor,
-    value: torch.Tensor,
-    scale: float,
-    attn_mask: Optional[torch.Tensor] = None,
+        query: torch.Tensor,
+        key: torch.Tensor,
+        value: torch.Tensor,
+        scale: float,
+        attn_mask: Optional[torch.Tensor] = None,
 ) -> torch.Tensor:
     attn_weights = scale * torch.einsum("qhd,khd->hqk", query, key).float()
     if attn_mask is not None:
@@ -50,15 +51,15 @@ def ref_masked_attention(
 
 
 def ref_single_query_cached_kv_attention(
-    output: torch.Tensor,
-    query: torch.Tensor,
-    num_queries_per_kv: int,
-    key_cache: torch.Tensor,
-    value_cache: torch.Tensor,
-    block_tables: torch.Tensor,
-    context_lens: torch.Tensor,
-    scale: float,
-    alibi_slopes: Optional[torch.Tensor],
+        output: torch.Tensor,
+        query: torch.Tensor,
+        num_queries_per_kv: int,
+        key_cache: torch.Tensor,
+        value_cache: torch.Tensor,
+        block_tables: torch.Tensor,
+        context_lens: torch.Tensor,
+        scale: float,
+        alibi_slopes: Optional[torch.Tensor],
 ) -> None:
     num_query_heads = query.shape[1]
     num_kv_heads = value_cache.shape[1]
@@ -116,24 +117,24 @@ def ref_single_query_cached_kv_attention(
 @pytest.mark.parametrize("seed", SEEDS)
 @pytest.mark.parametrize("device", CUDA_DEVICES)
 def test_paged_attention(
-    kv_cache_factory,
-    version: str,
-    num_seqs: int,
-    num_heads: Tuple[int, int],
-    head_size: int,
-    use_alibi: bool,
-    block_size: int,
-    dtype: torch.dtype,
-    kv_cache_dtype: str,
-    seed: int,
-    device: str,
+        kv_cache_factory,
+        version: str,
+        num_seqs: int,
+        num_heads: Tuple[int, int],
+        head_size: int,
+        use_alibi: bool,
+        block_size: int,
+        dtype: torch.dtype,
+        kv_cache_dtype: str,
+        seed: int,
+        device: str,
 ) -> None:
     random.seed(seed)
     torch.random.manual_seed(seed)
     if torch.cuda.is_available():
         torch.cuda.manual_seed(seed)
     torch.set_default_device(device)
-    scale = float(1.0 / (head_size**0.5))
+    scale = float(1.0 / (head_size ** 0.5))
     num_query_heads, num_kv_heads = num_heads
     query = torch.empty(num_seqs, num_query_heads, head_size, dtype=dtype)
     query.uniform_(-scale, scale)
@@ -172,6 +173,13 @@ def test_paged_attention(
 
     # Call the paged attention kernel.
     output = torch.empty_like(query)
+
+    # 输出物理位置
+    print("output is on ", output.device())
+    print("query is on ", query.device())
+    print("key_cache is on ", key_cache.device())
+    print("value_cache is on ", value_cache.device())
+
     if version == "v1":
         ops.paged_attention_v1(
             output,
