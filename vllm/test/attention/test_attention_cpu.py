@@ -32,7 +32,7 @@ BLOCK_SIZES = [16]
 USE_ALIBI = [False]
 KV_CACHE_DTYPE = ["auto"]
 SEEDS = [0]
-CUDA_DEVICES = ["cuda:0"]
+CUDA_DEVICES = ["cpu"]
 
 def ref_masked_attention(
     query: torch.Tensor,
