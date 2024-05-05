@@ -5,7 +5,7 @@ import pytest
 import torch
 from allclose_default import get_default_atol, get_default_rtol
 
-from vllm import _custom_ops as ops
+from vllm._C import ops
 from vllm.utils import get_max_shared_memory_bytes, is_hip
 
 FLOAT32_BYTES = torch.finfo(torch.float).bits // 8
@@ -110,7 +110,7 @@ def ref_single_query_cached_kv_attention(
         output[i].copy_(out, non_blocking=True)
 
 
-@pytest.mark.parametrize("version", ["v1", "v2"])
+@pytest.mark.parametrize("version", ["v1"])
 @pytest.mark.parametrize("num_seqs", NUM_GEN_SEQS)
 @pytest.mark.parametrize("num_heads", NUM_HEADS)
 @pytest.mark.parametrize("head_size", HEAD_SIZES)
@@ -236,23 +236,23 @@ def test_paged_attention(
         raise AssertionError(f"Unknown version: {version}")
 
     # Run the reference implementation.
-    if kv_cache_dtype == "fp8":
-        # Convert cache data back to dtype.
-        x = 16 // torch.tensor([], dtype=dtype).element_size()
-        key_cache_shape = (NUM_BLOCKS, num_kv_heads, head_size // x,
-                           block_size, x)
-        dequantized_key_cache = torch.empty(size=key_cache_shape,
-                                            dtype=dtype,
-                                            device=device)
-        ops.convert_fp8(key_cache, dequantized_key_cache)
-        key_cache = dequantized_key_cache
-
-        value_cache_shape = value_cache.shape
-        dequantized_value_cache = torch.empty(size=value_cache_shape,
-                                              dtype=dtype,
-                                              device=device)
-        ops.convert_fp8(value_cache, dequantized_value_cache)
-        value_cache = dequantized_value_cache
+    # if kv_cache_dtype == "fp8":
+    #     # Convert cache data back to dtype.
+    #     x = 16 // torch.tensor([], dtype=dtype).element_size()
+    #     key_cache_shape = (NUM_BLOCKS, num_kv_heads, head_size // x,
+    #                        block_size, x)
+    #     dequantized_key_cache = torch.empty(size=key_cache_shape,
+    #                                         dtype=dtype,
+    #                                         device=device)
+    #     ops.convert_fp8(key_cache, dequantized_key_cache)
+    #     key_cache = dequantized_key_cache
+    #
+    #     value_cache_shape = value_cache.shape
+    #     dequantized_value_cache = torch.empty(size=value_cache_shape,
+    #                                           dtype=dtype,
+    #                                           device=device)
+    #     ops.convert_fp8(value_cache, dequantized_value_cache)
+    #     value_cache = dequantized_value_cache
 
     ref_output = torch.empty_like(query)
     ref_single_query_cached_kv_attention(
