@@ -69,7 +69,7 @@ def ref_single_query_cached_kv_attention(
         key_cache: torch.Tensor,
         value_cache: torch.Tensor,
         block_tables: torch.Tensor,
-        context_lens: torch.Tensor, 
+        context_lens: torch.Tensor,
         scale: float,
         alibi_slopes: Optional[torch.Tensor],
 ) -> None:
@@ -193,8 +193,8 @@ def test_paged_attention(
     print("value_cache is on ", value_cache.device)
 
     # 代码开始时间
-    #start_time = timeit.default_timer()
-    start_time = perf_counter()
+    start_time = timeit.default_timer()
+    # start_time = perf_counter()
     if version == "v1":
         ops.paged_attention_v1(
             output,
@@ -249,9 +249,9 @@ def test_paged_attention(
     # 执行时间
     torch.cuda.synchronize()
 
-    end_time = perf_counter()
-    elapsed_time.append(end_time - start_time)
-    #elapsed_time = timeit.default_timer() - start_time
+    # end_time = perf_counter()
+    # elapsed_time.append(end_time - start_time)
+    elapsed_time = timeit.default_timer() - start_time
     print("elapsed_time = ", elapsed_time)
     # Run the reference implementation.
     # if kv_cache_dtype == "fp8":
