@@ -4,8 +4,6 @@ from typing import List, Optional, Tuple
 import pytest
 import torch
 from allclose_default import get_default_atol, get_default_rtol
-from xformers import ops as xops
-from xformers.ops.fmha.attn_bias import BlockDiagonalCausalMask
 
 from vllm import _custom_ops as ops
 from vllm.utils import get_max_shared_memory_bytes, is_hip
@@ -13,7 +11,9 @@ from vllm.utils import get_max_shared_memory_bytes, is_hip
 FLOAT32_BYTES = torch.finfo(torch.float).bits // 8
 # This will change depending on the compute capability.
 # - 512 as a buffer
-MAX_SEQ_LEN = get_max_shared_memory_bytes() // FLOAT32_BYTES - 512
+# 改动测试1
+num_cpu_blocks=7281
+# MAX_SEQ_LEN = get_max_shared_memory_bytes() // FLOAT32_BYTES - 512
 # There may not be enough gpu memory due to large NUM_BLOCKS.
 # Reduce NUM_BLOCKS when it happens.
 NUM_BLOCKS = 4321  # Arbitrary values for testing
@@ -33,6 +33,9 @@ USE_ALIBI = [False]
 KV_CACHE_DTYPE = ["auto"]
 SEEDS = [0]
 CUDA_DEVICES = ["cpu"]
+
+# 改动测试2
+MAX_SEQ_LEN = BLOCK_SIZES * num_cpu_blocks
 
 
 def ref_masked_attention(
