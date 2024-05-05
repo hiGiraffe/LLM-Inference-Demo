@@ -14,6 +14,7 @@ FLOAT32_BYTES = torch.finfo(torch.float).bits // 8
 # 改动测试1
 num_cpu_blocks=7281
 # MAX_SEQ_LEN = get_max_shared_memory_bytes() // FLOAT32_BYTES - 512
+
 # There may not be enough gpu memory due to large NUM_BLOCKS.
 # Reduce NUM_BLOCKS when it happens.
 NUM_BLOCKS = 4321  # Arbitrary values for testing
@@ -34,8 +35,8 @@ KV_CACHE_DTYPE = ["auto"]
 SEEDS = [0]
 CUDA_DEVICES = ["cpu"]
 
-# 改动测试2
-MAX_SEQ_LEN = BLOCK_SIZES * num_cpu_blocks
+# 改动测试2 这里是blocksize
+MAX_SEQ_LEN = 16 * num_cpu_blocks
 
 
 def ref_masked_attention(
@@ -178,10 +179,10 @@ def test_paged_attention(
     output = torch.empty_like(query)
 
     # 输出物理位置
-    print("output is on ", output.device())
-    print("query is on ", query.device())
-    print("key_cache is on ", key_cache.device())
-    print("value_cache is on ", value_cache.device())
+    print("output is on ", output.device)
+    print("query is on ", query.device)
+    print("key_cache is on ", key_cache.device)
+    print("value_cache is on ", value_cache.device)
 
     if version == "v1":
         ops.paged_attention_v1(
