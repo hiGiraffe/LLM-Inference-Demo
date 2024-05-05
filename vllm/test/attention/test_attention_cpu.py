@@ -7,6 +7,7 @@ from allclose_default import get_default_atol, get_default_rtol
 
 from vllm import _custom_ops as ops
 from vllm.utils import get_max_shared_memory_bytes, is_hip, create_kv_caches_with_random
+import timeit
 
 FLOAT32_BYTES = torch.finfo(torch.float).bits // 8
 # This will change depending on the compute capability.
@@ -20,7 +21,7 @@ num_cpu_blocks = 7281
 NUM_BLOCKS = 4321  # Arbitrary values for testing
 PARTITION_SIZE = 512
 # flshattF and tritonflashattF supported: {torch.float16, torch.bfloat16}
-DTYPES = [torch.half]
+DTYPES = [torch.float]
 NUM_GEN_SEQS = [7]  # Arbitrary values for testing
 NUM_PREFILL_SEQS = [3]  # Arbitrary values for testing
 NUM_HEADS = [(40, 40)]  # Arbitrary values for testing
@@ -195,6 +196,8 @@ def test_paged_attention(
     print("key_cache is on ", key_cache.device)
     print("value_cache is on ", value_cache.device)
 
+    # 代码开始时间
+    start_time = timeit.default_timer()
     if version == "v1":
         ops.paged_attention_v1(
             output,
@@ -246,6 +249,9 @@ def test_paged_attention(
     else:
         raise AssertionError(f"Unknown version: {version}")
 
+    #执行时间
+    elapsed_time = timeit.default_timer() - start_time
+    print("elapsed_time = ",elapsed_time)
     # Run the reference implementation.
     # if kv_cache_dtype == "fp8":
     #     # Convert cache data back to dtype.
