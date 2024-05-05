@@ -69,7 +69,7 @@ def ref_single_query_cached_kv_attention(
         key_cache: torch.Tensor,
         value_cache: torch.Tensor,
         block_tables: torch.Tensor,
-        context_lens: torch.Tensor, a
+        context_lens: torch.Tensor, 
         scale: float,
         alibi_slopes: Optional[torch.Tensor],
 ) -> None:
@@ -300,6 +300,7 @@ def test_paged_attention(
 
 
 if __name__ == '__main__':
+    print("MAX_SEQ_LEN = ", MAX_SEQ_LEN)
     test_paged_attention(create_kv_caches_with_random, version, num_seqs,
                          num_heads, head_size, use_alibi, block_size,
                          dtype, kv_cache_dtype, seed, device)
