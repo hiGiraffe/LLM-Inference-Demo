@@ -2,6 +2,7 @@ import random
 from typing import List, Optional, Tuple
 
 import torch
+from time import perf_counter
 from allclose_default import get_default_atol, get_default_rtol
 
 from vllm import _custom_ops as ops
@@ -68,7 +69,7 @@ def ref_single_query_cached_kv_attention(
         key_cache: torch.Tensor,
         value_cache: torch.Tensor,
         block_tables: torch.Tensor,
-        context_lens: torch.Tensor,
+        context_lens: torch.Tensor, a
         scale: float,
         alibi_slopes: Optional[torch.Tensor],
 ) -> None:
@@ -192,7 +193,8 @@ def test_paged_attention(
     print("value_cache is on ", value_cache.device)
 
     # 代码开始时间
-    start_time = timeit.default_timer()
+    #start_time = timeit.default_timer()
+    start_time = perf_counter()
     if version == "v1":
         ops.paged_attention_v1(
             output,
@@ -245,7 +247,11 @@ def test_paged_attention(
         raise AssertionError(f"Unknown version: {version}")
 
     # 执行时间
-    elapsed_time = timeit.default_timer() - start_time
+    torch.cuda.synchronize()
+
+    end_time = perf_counter()
+    elapsed_time.append(end_time - start_time)
+    #elapsed_time = timeit.default_timer() - start_time
     print("elapsed_time = ", elapsed_time)
     # Run the reference implementation.
     # if kv_cache_dtype == "fp8":
