@@ -5,14 +5,14 @@ import pytest
 import torch
 from allclose_default import get_default_atol, get_default_rtol
 
-from vllm._C import ops
-from vllm.utils import get_max_shared_memory_bytes, is_hip
+from vllm import _custom_ops as ops
+from vllm.utils import get_max_shared_memory_bytes, is_hip, create_kv_caches_with_random
 
 FLOAT32_BYTES = torch.finfo(torch.float).bits // 8
 # This will change depending on the compute capability.
 # - 512 as a buffer
 # 改动测试1
-num_cpu_blocks=7281
+num_cpu_blocks = 7281
 # MAX_SEQ_LEN = get_max_shared_memory_bytes() // FLOAT32_BYTES - 512
 
 # There may not be enough gpu memory due to large NUM_BLOCKS.
@@ -37,6 +37,17 @@ CUDA_DEVICES = ["cpu"]
 
 # 改动测试2 这里是blocksize
 MAX_SEQ_LEN = 16 * num_cpu_blocks
+
+version = "v1"
+num_seqs = NUM_GEN_SEQS[0]
+num_heads = NUM_HEADS[0]
+head_size = HEAD_SIZES[0]
+use_alibi = USE_ALIBI[0]
+block_size = BLOCK_SIZES[0]
+dtype = DTYPES[0]
+kv_cache_dtype = KV_CACHE_DTYPE[0]
+seed = SEEDS[0]
+device = CUDA_DEVICES[0]
 
 
 def ref_masked_attention(
@@ -110,16 +121,16 @@ def ref_single_query_cached_kv_attention(
         output[i].copy_(out, non_blocking=True)
 
 
-@pytest.mark.parametrize("version", ["v1"])
-@pytest.mark.parametrize("num_seqs", NUM_GEN_SEQS)
-@pytest.mark.parametrize("num_heads", NUM_HEADS)
-@pytest.mark.parametrize("head_size", HEAD_SIZES)
-@pytest.mark.parametrize("use_alibi", USE_ALIBI)
-@pytest.mark.parametrize("block_size", BLOCK_SIZES)
-@pytest.mark.parametrize("dtype", DTYPES)
-@pytest.mark.parametrize("kv_cache_dtype", KV_CACHE_DTYPE)
-@pytest.mark.parametrize("seed", SEEDS)
-@pytest.mark.parametrize("device", CUDA_DEVICES)
+# @pytest.mark.parametrize("version", ["v1"])
+# @pytest.mark.parametrize("num_seqs", NUM_GEN_SEQS)
+# @pytest.mark.parametrize("num_heads", NUM_HEADS)
+# @pytest.mark.parametrize("head_size", HEAD_SIZES)
+# @pytest.mark.parametrize("use_alibi", USE_ALIBI)
+# @pytest.mark.parametrize("block_size", BLOCK_SIZES)
+# @pytest.mark.parametrize("dtype", DTYPES)
+# @pytest.mark.parametrize("kv_cache_dtype", KV_CACHE_DTYPE)
+# @pytest.mark.parametrize("seed", SEEDS)
+# @pytest.mark.parametrize("device", CUDA_DEVICES)
 def test_paged_attention(
         kv_cache_factory,
         version: str,
@@ -279,3 +290,9 @@ def test_paged_attention(
     if kv_cache_dtype == "fp8":
         atol, rtol = 1e-2, 1e-5
     assert torch.allclose(output, ref_output, atol=atol, rtol=rtol)
+
+
+if __name__ == '__main__':
+    test_paged_attention(create_kv_caches_with_random, version, num_seqs,
+                         num_heads, head_size, use_alibi, block_size,
+                         dtype, kv_cache_dtype, seed, device)
