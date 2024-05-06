@@ -241,6 +241,9 @@ def test_paged_attention(
 
     #执行时间
     elapsed_time = timeit.default_timer() - start_time
+    print("block size = ", block_size)
+    print("head size = ", head_size)
+    print("num heads = ", num_heads)
     print("elapsed_time = ",elapsed_time)
     # Run the reference implementation.
     # if kv_cache_dtype == "fp8":
