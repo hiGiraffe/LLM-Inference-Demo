@@ -36,7 +36,6 @@ KV_CACHE_DTYPE = ["auto"]
 SEEDS = [0]
 CUDA_DEVICES = ["cuda:0"]
 
-version = "v1"
 
 
 
@@ -180,10 +179,10 @@ def test_paged_attention(
     output = torch.empty_like(query)
 
     # 输出物理位置
-    print("output is on ", output.device)
-    print("query is on ", query.device)
-    print("key_cache is on ", key_cache.device)
-    print("value_cache is on ", value_cache.device)
+    #print("output is on ", output.device)
+    #print("query is on ", query.device)
+    #print("key_cache is on ", key_cache.device)
+    #print("value_cache is on ", value_cache.device)
 
     # 代码开始时间
     start_time = timeit.default_timer()
@@ -295,7 +294,9 @@ def test_paged_attention(
     assert torch.allclose(output, ref_output, atol=atol, rtol=rtol)
 
 
+
 if __name__ == '__main__':
+    version = "v1"
     num_seqs = NUM_GEN_SEQS[0]
     use_alibi = USE_ALIBI[0]
     dtype = DTYPES[0]
