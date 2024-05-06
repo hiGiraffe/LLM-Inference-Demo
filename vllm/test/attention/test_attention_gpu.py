@@ -23,28 +23,21 @@ PARTITION_SIZE = 512
 DTYPES = [torch.float]
 NUM_GEN_SEQS = [7]  # Arbitrary values for testing
 NUM_PREFILL_SEQS = [3]  # Arbitrary values for testing
-NUM_HEADS = [(40, 40)]  # Arbitrary values for testing
+NUM_HEADS = [(40, 40), (64, 8)]  # Arbitrary values for testing
 
 # FlashAttention forward only supports head dimension at most 128
 # https://github.com/ROCmSoftwarePlatform/flash-attention/blob/3d2b6f5d037782cc2c906909a46fb7e2e1b48b25/csrc/flash_attn_rocm/flash_api.cpp#L62
-HEAD_SIZES = [64]
+HEAD_SIZES = [64, 80, 96, 112, 128, 256
+              ] if not is_hip() else [64, 80, 96, 112, 128]
 
-BLOCK_SIZES = [16]
+BLOCK_SIZES = [16, 32]
 USE_ALIBI = [False]
 KV_CACHE_DTYPE = ["auto"]
 SEEDS = [0]
 CUDA_DEVICES = ["cuda:0"]
 
 version = "v1"
-num_seqs = NUM_GEN_SEQS[0]
-num_heads = NUM_HEADS[0]
-head_size = HEAD_SIZES[0]
-use_alibi = USE_ALIBI[0]
-block_size = BLOCK_SIZES[0]
-dtype = DTYPES[0]
-kv_cache_dtype = KV_CACHE_DTYPE[0]
-seed = SEEDS[0]
-device = CUDA_DEVICES[0]
+
 
 
 def ref_masked_attention(
@@ -252,6 +245,9 @@ def test_paged_attention(
     # end_time = perf_counter()
     # elapsed_time.append(end_time - start_time)
     elapsed_time = timeit.default_timer() - start_time
+    print("block size = ", block_size)
+    print("head size = ",head_size)
+    print("num heads = ",num_heads)
     print("elapsed_time = ", elapsed_time)
     # Run the reference implementation.
     # if kv_cache_dtype == "fp8":
@@ -300,7 +296,18 @@ def test_paged_attention(
 
 
 if __name__ == '__main__':
-    print("MAX_SEQ_LEN = ", MAX_SEQ_LEN)
-    test_paged_attention(create_kv_caches_with_random, version, num_seqs,
+    num_seqs = NUM_GEN_SEQS[0]
+    use_alibi = USE_ALIBI[0]
+    dtype = DTYPES[0]
+    kv_cache_dtype = KV_CACHE_DTYPE[0]
+    seed = SEEDS[0]
+    device = CUDA_DEVICES[0]
+    # num_heads = NUM_HEADS[0]
+    # block_size = BLOCK_SIZES[0]
+    # head_size = HEAD_SIZES[0]
+    for num_heads in NUM_HEADS:
+        for block_size in BLOCK_SIZES:
+            for head_size in HEAD_SIZES:
+                test_paged_attention(create_kv_caches_with_random, version, num_seqs,
                          num_heads, head_size, use_alibi, block_size,
                          dtype, kv_cache_dtype, seed, device)
