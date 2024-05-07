@@ -13,7 +13,7 @@ FLOAT32_BYTES = torch.finfo(torch.float).bits // 8
 # This will change depending on the compute capability.
 # - 512 as a buffer
 # 改动测试1
-MAX_SEQ_LEN = get_max_shared_memory_bytes() // FLOAT32_BYTES - 512
+MAX_SEQ_LEN = 4096
 
 # There may not be enough gpu memory due to large NUM_BLOCKS.
 # Reduce NUM_BLOCKS when it happens.
@@ -149,7 +149,7 @@ def test_paged_attention(
     if use_alibi:
         alibi_slopes = torch.randn(num_query_heads, dtype=torch.float)
 
-    context_lens = [random.randint(1, MAX_SEQ_LEN) for _ in range(num_seqs)]
+    context_lens = [MAX_SEQ_LEN for _ in range(num_seqs)]
     context_lens[-1] = MAX_SEQ_LEN
     max_context_len = max(context_lens)
     context_lens = torch.tensor(context_lens, dtype=torch.int)
@@ -239,7 +239,7 @@ def test_paged_attention(
         raise AssertionError(f"Unknown version: {version}")
 
     # 执行时间
-    torch.cuda.synchronize()
+    torch.cuda.synchronize(device)
 
     # end_time = perf_counter()
     # elapsed_time.append(end_time - start_time)

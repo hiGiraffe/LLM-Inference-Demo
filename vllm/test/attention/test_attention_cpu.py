@@ -38,7 +38,8 @@ SEEDS = [0]
 CUDA_DEVICES = ["cpu"]
 
 # 改动测试2 这里是blocksize
-MAX_SEQ_LEN = 16 * num_cpu_blocks
+# MAX_SEQ_LEN = 16 * num_cpu_blocks
+MAX_SEQ_LEN = 4096
 
 
 def ref_masked_attention(
@@ -151,7 +152,7 @@ def test_paged_attention(
     if use_alibi:
         alibi_slopes = torch.randn(num_query_heads, dtype=torch.float)
 
-    context_lens = [random.randint(1, MAX_SEQ_LEN) for _ in range(num_seqs)]
+    context_lens = [MAX_SEQ_LEN for _ in range(num_seqs)]
     context_lens[-1] = MAX_SEQ_LEN
     max_context_len = max(context_lens)
     context_lens = torch.tensor(context_lens, dtype=torch.int)
@@ -181,10 +182,10 @@ def test_paged_attention(
     output = torch.empty_like(query)
 
     # 输出物理位置
-    #print("output is on ", output.device)
-    #print("query is on ", query.device)
-    #print("key_cache is on ", key_cache.device)
-    #print("value_cache is on ", value_cache.device)
+    # print("output is on ", output.device)
+    # print("query is on ", query.device)
+    # print("key_cache is on ", key_cache.device)
+    # print("value_cache is on ", value_cache.device)
 
     # 代码开始时间
     start_time = timeit.default_timer()
@@ -239,12 +240,12 @@ def test_paged_attention(
     else:
         raise AssertionError(f"Unknown version: {version}")
 
-    #执行时间
+    # 执行时间
     elapsed_time = timeit.default_timer() - start_time
     print("block size = ", block_size)
     print("head size = ", head_size)
     print("num heads = ", num_heads)
-    print("elapsed_time = ",elapsed_time)
+    print("elapsed_time = ", elapsed_time)
     # Run the reference implementation.
     # if kv_cache_dtype == "fp8":
     #     # Convert cache data back to dtype.
@@ -306,5 +307,5 @@ if __name__ == '__main__':
         for block_size in BLOCK_SIZES:
             for head_size in HEAD_SIZES:
                 test_paged_attention(create_kv_caches_with_random, version, num_seqs,
-                         num_heads, head_size, use_alibi, block_size,
-                         dtype, kv_cache_dtype, seed, device)
+                                     num_heads, head_size, use_alibi, block_size,
+                                     dtype, kv_cache_dtype, seed, device)
