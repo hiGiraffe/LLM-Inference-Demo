@@ -181,12 +181,6 @@ def test_paged_attention(
     # Call the paged attention kernel.
     output = torch.empty_like(query)
 
-    # 输出物理位置
-    # print("output is on ", output.device)
-    # print("query is on ", query.device)
-    # print("key_cache is on ", key_cache.device)
-    # print("value_cache is on ", value_cache.device)
-
     # 代码开始时间
     start_time = timeit.default_timer()
     if version == "v1":
@@ -242,6 +236,7 @@ def test_paged_attention(
 
     # 执行时间
     elapsed_time = timeit.default_timer() - start_time
+    print("num seqs = ",num_seqs)
     print("block size = ", block_size)
     print("head size = ", head_size)
     print("num heads = ", num_heads)

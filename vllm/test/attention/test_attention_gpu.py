@@ -244,6 +244,7 @@ def test_paged_attention(
     # end_time = perf_counter()
     # elapsed_time.append(end_time - start_time)
     elapsed_time = timeit.default_timer() - start_time
+    print("num seqs = ",num_seqs)
     print("block size = ", block_size)
     print("head size = ",head_size)
     print("num heads = ",num_heads)
