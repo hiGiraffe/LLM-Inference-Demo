@@ -19,10 +19,10 @@ num_cpu_blocks = 7281
 # There may not be enough gpu memory due to large NUM_BLOCKS.
 # Reduce NUM_BLOCKS when it happens.
 NUM_BLOCKS = 4321  # Arbitrary values for testing
-PARTITION_SIZE = 512
+PARTITION_SIZE = 512 # V2才考虑
 # flshattF and tritonflashattF supported: {torch.float16, torch.bfloat16}
 DTYPES = [torch.float]
-NUM_GEN_SEQS = [7]  # Arbitrary values for testing
+NUM_GEN_SEQS = [2,4,8,16,32,64,128]  # Arbitrary values for testing
 NUM_PREFILL_SEQS = [3]  # Arbitrary values for testing
 NUM_HEADS = [(40, 40), (64, 8)]  # Arbitrary values for testing
 
@@ -31,7 +31,7 @@ NUM_HEADS = [(40, 40), (64, 8)]  # Arbitrary values for testing
 HEAD_SIZES = [64, 80, 96, 112, 128, 256
               ] if not is_hip() else [64, 80, 96, 112, 128]
 
-BLOCK_SIZES = [16, 32]
+BLOCK_SIZES = [16]
 USE_ALIBI = [False]
 KV_CACHE_DTYPE = ["auto"]
 SEEDS = [0]
@@ -294,7 +294,7 @@ def test_paged_attention(
 
 if __name__ == '__main__':
     version = "v1"
-    num_seqs = NUM_GEN_SEQS[0]
+    # num_seqs = NUM_GEN_SEQS[0]
     use_alibi = USE_ALIBI[0]
     dtype = DTYPES[0]
     kv_cache_dtype = KV_CACHE_DTYPE[0]
@@ -303,9 +303,10 @@ if __name__ == '__main__':
     # num_heads = NUM_HEADS[0]
     # block_size = BLOCK_SIZES[0]
     # head_size = HEAD_SIZES[0]
-    for num_heads in NUM_HEADS:
-        for block_size in BLOCK_SIZES:
-            for head_size in HEAD_SIZES:
-                test_paged_attention(create_kv_caches_with_random, version, num_seqs,
-                                     num_heads, head_size, use_alibi, block_size,
-                                     dtype, kv_cache_dtype, seed, device)
+    for num_seqs in NUM_GEN_SEQS:
+        for num_heads in NUM_HEADS:
+            for block_size in BLOCK_SIZES:
+                for head_size in HEAD_SIZES:
+                    test_paged_attention(create_kv_caches_with_random, version, num_seqs,
+                                         num_heads, head_size, use_alibi, block_size,
+                                         dtype, kv_cache_dtype, seed, device)
