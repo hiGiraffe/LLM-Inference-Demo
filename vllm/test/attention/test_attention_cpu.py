@@ -298,6 +298,9 @@ if __name__ == '__main__':
     # num_heads = NUM_HEADS[0]
     # block_size = BLOCK_SIZES[0]
     # head_size = HEAD_SIZES[0]
+    test_paged_attention(create_kv_caches_with_random, version, NUM_GEN_SEQS[0],
+                         NUM_HEADS[0], HEAD_SIZES[0], use_alibi, BLOCK_SIZES[0],
+                         dtype, kv_cache_dtype, seed, device)
     for num_seqs in NUM_GEN_SEQS:
         for num_heads in NUM_HEADS:
             for block_size in BLOCK_SIZES:
