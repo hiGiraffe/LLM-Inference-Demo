@@ -9,6 +9,7 @@ def communicate():
     # 测试从CPU到GPU数据加载时间
     for _ in range(100):
         a = torch.randn((2, 3), device=cpu)
+        a.to(cuda1)
 
     # 测试从GPU到GPU数据加载时间
     cuda1 = torch.device('cuda', 0)
