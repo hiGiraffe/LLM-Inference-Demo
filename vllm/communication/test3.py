@@ -16,6 +16,10 @@ def communicate():
         a = torch.randn((2, 3), device=cuda2)
         a.to(cuda1)
 
+    for _ in range(100000):
+        a = torch.randn((2, 3), device=cpu)
+        a.to(cuda1)
+
     torch.cuda.synchronize(cuda1)
     torch.cuda.synchronize(cuda2)
 
@@ -25,13 +29,13 @@ def communicate():
     torch.cuda.synchronize(cuda1)
 
 
-    # 测试从GPU到GPU数据加载时间
+    # 第一次测试从GPU到GPU数据加载时间
     a = torch.randn((200, 300), device=cuda2)
     a.to(cuda1)
     torch.cuda.synchronize(cuda1)
     torch.cuda.synchronize(cuda2)
 
-    # 测试从GPU到CPU数据加载时间
+    # 第一次测试从GPU到CPU数据加载时间
     a = torch.randn((200, 300), device=cuda1)
     a.to(cpu)
     torch.cuda.synchronize(cuda1)
