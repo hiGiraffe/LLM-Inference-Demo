@@ -61,6 +61,9 @@ def communicate():
     a.to(cuda1)
     torch.cuda.synchronize(cuda1)
 
+@profile
+def test():
+    communicate()
 
 if __name__ == '__main__':
-    communicate()
+    test()
