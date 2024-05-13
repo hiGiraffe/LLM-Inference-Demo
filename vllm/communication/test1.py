@@ -19,3 +19,12 @@ for _ in range(100000):
     a = torch.randn((2, 3), device=cuda2)
     a.to(cuda1)
 print('gpu --> gpu cost time is', time.time() - s)
+
+# 测试从GPU到CPU数据加载时间
+cuda1 = torch.device('cuda', 0)
+cpu = torch.device('cpu', 0)
+s = time.time()
+for _ in range(100000):
+    a = torch.randn((2, 3), device=cuda1)
+    a.to(cpu)
+print('gpu --> cpu cost time is', time.time() - s)
