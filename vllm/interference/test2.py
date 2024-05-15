@@ -1,7 +1,6 @@
 
 
     import torch
-    import concurrent.futures
 
     修改llamaDecoderLayer的forward函数
 
@@ -27,18 +26,24 @@
 
         hidden_states_ = hidden_states.clone()
 
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            future1 = executor.submit(self.self_attn, positions=positions,
-                                      hidden_states=hidden_states_,
-                                      kv_cache=kv_cache,
-                                      attn_metadata=attn_metadata)
-            future2 = executor.submit(self.self_attn, positions=positions,
-                                      hidden_states=hidden_states_,
-                                      kv_cache=kv_cache,
-                                      attn_metadata=attn_metadata)
+        s1 = torch.cuda.Stream()
+        s2 = torch.cuda.Stream()
+        with torch.cuda.stream(s1):
+            hidden_states1 = self.self_attn(
+                positions=positions,
+                hidden_states=hidden_states_,
+                kv_cache=kv_cache,
+                attn_metadata=attn_metadata,
+            )
+        with torch.cuda.stream(s2):
+            hidden_states2 = self.self_attn(
+                positions=positions,
+                hidden_states=hidden_states_,
+                kv_cache=kv_cache,
+                attn_metadata=attn_metadata,
+            )
 
-            hidden_states = future1.result() #在这里会报错
-            hidden_states = future2.result()
+        hidden_states=hidden_states1
 
         # Fully Connected
         hidden_states, residual = self.post_attention_layernorm(
