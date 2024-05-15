@@ -18,9 +18,10 @@ def count():
         D = torch.mm(B,B)
 
     torch.cuda.synchronize()
-
-    print(C)
-    print(D)
+    with torch.cuda.stream(s1):
+        print(C)
+    with torch.cuda.stream(s2):
+        print(D)
 
 if __name__ == '__main__':
     count()
