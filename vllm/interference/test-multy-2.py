@@ -1,17 +1,26 @@
 import torch
-s1 = torch.cuda.stream()
-s2 = torch.cuda.stream()
+import torch.cuda
+import threading
+from line_profiler import LineProfiler
 
-A = torch.rand(1000,1000,device="cuda")
-B = torch.rand(1000,1000,device="cuda")
+@profile
+def count():
+    s1 = torch.cuda.Stream()
+    s2 = torch.cuda.Stream()
 
-torch.cuda.synchronize()
-with torch.cuda.stream(s1):
-    C = torch.mm(A,A)
-with torch.cuda.stream(s2):
-    D = torch.mm(B,B)
+    A = torch.rand(1000,1000,device="cuda")
+    B = torch.rand(1000,1000,device="cuda")
 
-torch.cuda.synchronize()
+    torch.cuda.synchronize()
+    with torch.cuda.stream(s1):
+        C = torch.mm(A,A)
+    with torch.cuda.stream(s2):
+        D = torch.mm(B,B)
 
-print(C)
-print(D)
+    torch.cuda.synchronize()
+
+    print(C)
+    print(D)
+
+if __name__ == '__main__':
+    count()
