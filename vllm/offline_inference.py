@@ -1,7 +1,7 @@
 #import sys
 #sys.path.append('/root/vllm')
-
 from vllm import LLM, SamplingParams
+
 
 
 # Sample prompts.
@@ -15,7 +15,7 @@ prompts = [
 sampling_params = SamplingParams(temperature=0.8, top_p=0.95)
 
 # Create an LLM.
-llm = LLM(model="meta-llama/Llama-2-7b-chat-hf")
+llm = LLM(model="meta-llama/Llama-2-7b-chat-hf",enforce_eager=True)
 # Generate texts from the prompts. The output is a list of RequestOutput objects
 # that contain the prompt, generated text, and other information.
 outputs = llm.generate(prompts, sampling_params)
