@@ -3,7 +3,7 @@ import torch.cuda
 import threading
 from line_profiler import LineProfiler
 
-@profile
+#@profile
 def count():
     s1 = torch.cuda.Stream()
     s2 = torch.cuda.Stream()
