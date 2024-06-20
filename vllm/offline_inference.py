@@ -1,5 +1,4 @@
 from vllm import LLM, SamplingParams
-from line_profiler import LineProfiler
 
 # Sample prompts.
 prompts = [
@@ -18,7 +17,6 @@ prompts = [
 llm = LLM(model="meta-llama/Llama-2-7b-chat-hf", enforce_eager=True)
 
 
-@profile
 def generate100(num=100):
     # Generate texts from the prompts. The output is a list of RequestOutput objects
     # that contain the prompt, generated text, and other information.
@@ -33,7 +31,6 @@ def generate100(num=100):
         print(f"Prompt: {prompt!r}, Generated text: {generated_text!r}")
 
 
-@profile
 def generate200(num=200):
     # Generate texts from the prompts. The output is a list of RequestOutput objects
     # that contain the prompt, generated text, and other information.
