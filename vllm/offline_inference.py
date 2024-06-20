@@ -3,15 +3,6 @@ from vllm import LLM, SamplingParams
 # Sample prompts.
 prompts = [
     "Hello, my name is",
-    "Hello, my name is",
-    "Hello, my name is",
-    "Hello, my name is",
-    "Hello, my name is",
-    "Hello, my name is",
-    "Hello, my name is",
-    "Hello, my name is",
-    "Hello, my name is",
-    "Hello, my name is",
 ]
 # Create an LLM.
 llm = LLM(model="meta-llama/Llama-2-7b-chat-hf", enforce_eager=True)
@@ -47,4 +38,4 @@ def generate200(num=200):
 
 if __name__ == '__main__':
     generate100()
-    generate200()
+    #generate200()
