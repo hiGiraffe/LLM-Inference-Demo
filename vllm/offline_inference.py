@@ -4,17 +4,15 @@ from line_profiler import LineProfiler
 # Sample prompts.
 prompts = [
     "Hello, my name is",
-    "The president of the United States is",
-    "The capital of France is",
-    "The future of AI is",
     "Hello, my name is",
-    "The president of the United States is",
-    "The capital of France is",
-    "The future of AI is",
     "Hello, my name is",
-    "The president of the United States is",
-    "The capital of France is",
-    "The future of AI is",
+    "Hello, my name is",
+    "Hello, my name is",
+    "Hello, my name is",
+    "Hello, my name is",
+    "Hello, my name is",
+    "Hello, my name is",
+    "Hello, my name is",
 ]
 # Create an LLM.
 llm = LLM(model="meta-llama/Llama-2-7b-chat-hf", enforce_eager=True)
@@ -34,6 +32,7 @@ def generate100(num=100):
         generated_text = output.outputs[0].text
         print(f"Prompt: {prompt!r}, Generated text: {generated_text!r}")
 
+
 @profile
 def generate200(num=200):
     # Generate texts from the prompts. The output is a list of RequestOutput objects
@@ -51,4 +50,4 @@ def generate200(num=200):
 
 if __name__ == '__main__':
     generate100()
-    generate200
+    generate200()
