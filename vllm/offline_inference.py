@@ -8,7 +8,7 @@ prompts = [
 llm = LLM(model="meta-llama/Llama-2-7b-chat-hf", enforce_eager=True)
 
 
-def generate100(num=100):
+def generate100(num=500):
     # Generate texts from the prompts. The output is a list of RequestOutput objects
     # that contain the prompt, generated text, and other information.
     # Create a sampling params object.
