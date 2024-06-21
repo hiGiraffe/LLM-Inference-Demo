@@ -2,13 +2,13 @@ from vllm import LLM, SamplingParams
 
 # Sample prompts.
 prompts = [
-    "Hello, my name is",
+    "Hello, my name is Sherry and I'm a 35-year-old woman from the United States. I've been a vegetarian for over 15 years and I'm passionate about promoting plant-based living for my health, the environment, and animal welfare. I've been following a mostly vegan lifestyle for the past 5 years and I love experimenting with new recipes and products in the plant-based space.",
 ]
 # Create an LLM.
 llm = LLM(model="meta-llama/Llama-2-7b-chat-hf", enforce_eager=True)
 
 
-def generate100(num=1000):
+def generate100(num=100):
     # Generate texts from the prompts. The output is a list of RequestOutput objects
     # that contain the prompt, generated text, and other information.
     # Create a sampling params object.
