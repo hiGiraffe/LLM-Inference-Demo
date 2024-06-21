@@ -2,11 +2,16 @@ from vllm import LLM, SamplingParams
 
 # Sample prompts.
 prompts = [
-    "Hello, my name is",
-    "Hello, my name is",
-    "Hello, my name is",
-    "Hello, my name is",
-    "Hello, my name is",
+    "1 Hello, my name is",
+    "2 Hello, my name is",
+    "3 Hello, my name is",
+    "4 Hello, my name is",
+    "5 Hello, my name is",
+    "6 Hello, my name is",
+    "7 Hello, my name is",
+    "8 Hello, my name is",
+    "9 Hello, my name is",
+    "10 Hello, my name is",
 ]
 # Create an LLM.
 llm = LLM(model="meta-llama/Llama-2-7b-chat-hf", enforce_eager=True)
